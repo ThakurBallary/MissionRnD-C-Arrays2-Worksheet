@@ -16,5 +16,18 @@ complexity .
 */
 
 int findSingleOccurenceNumber(int *A, int len) {
-	return -1;
+	if (!A || len < 1) {
+		return -1;
+	}
+	int once = 0, twice = 0, common1to0;
+	while (len) {
+		len--;
+		twice |= once & A[len]; 
+		once ^= A[len]; 
+		// below 3 lines makes once and twice to 0 when a number is appeared thrice
+		common1to0 = ~(once & twice);
+		once &= common1to0;
+		twice &= common1to0;
+	}
+	return once;
 }

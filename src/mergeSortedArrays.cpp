@@ -22,6 +22,78 @@ struct transaction {
 	char description[20];
 };
 
+int compareDateForMerge(char *A_date, char* B_date) {
+	int i;
+	// year
+	i = 6;
+	while (i < 10) {
+		if (A_date[i] < B_date[i]) {
+			return -1;
+		}
+		else if (B_date[i] < A_date[i]) {
+			return 1;
+		}
+		i++;
+	}
+	// month
+	i = 3;
+	while (i < 5) {
+		if (A_date[i] < B_date[i]) {
+			return -1;
+		}
+		else if (B_date[i] < A_date[i]) {
+			return 1;
+		}
+		i++;
+	}
+	// date
+	i = 0;
+	while (i < 2) {
+		if (A_date[i] < B_date[i]) {
+			return -1;
+		}
+		if (B_date[i] < A_date[i]) {
+			return 1;
+		}
+		i++;
+	}
+	return 0;
+}
+
+void insertIntoC(struct transaction *C, int *k, struct transaction *AorB, int *l) {
+	C[*k] = AorB[*l];
+	(*k)++;
+	(*l)++;
+}
+
+
 struct transaction * mergeSortedArrays(struct transaction *A, int ALen, struct transaction *B, int BLen) {
-	return NULL;
+	if (A == NULL || B == NULL || ALen < 1 || BLen < 1) {
+		return NULL;
+	}
+	struct transaction *C = (struct transaction *) malloc(sizeof(struct transaction) * (ALen + BLen));
+	int i = 0, j = 0, k = 0;
+	while (i < ALen && j < BLen) {
+		int dateStatus = compareDateForMerge(A[i].date, B[j].date);	
+		if (dateStatus == -1) {
+			insertIntoC(C, &k, A, &i);
+		}
+		else if (dateStatus == 1) {
+			insertIntoC(C, &k, B, &j);
+		}
+		else {
+			insertIntoC(C, &k, A, &i);
+			insertIntoC(C, &k, B, &j);
+		}	
+	}	
+	while (i < ALen) {
+		// remaining elements from A
+		insertIntoC(C, &k, A, &i);
+	}
+	while (j < BLen) {
+		//remaining elements from B
+		insertIntoC(C, &k, B, &j);
+	}
+
+	return C;
 }
